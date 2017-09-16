@@ -16,15 +16,19 @@ if appsignal.plug? do
 
     Add the following parser to your router.
 
-        plug Plug.Parsers,
-          parsers: [:urlencoded, :multipart, :json],
-          pass: ["*/*"],
-          json_decoder: Poison
+    ```
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json],
+      pass: ["*/*"],
+      json_decoder: Poison
+    ```
 
     Add the Appsignal.JSPlug to your endpoint.ex file.
 
-        use Appsignal.Phoenix # Below the AppSignal (Phoenix) plug
-        plug Appsignal.JSPlug
+    ```
+    use Appsignal.Phoenix # Below the AppSignal (Phoenix) plug
+    plug Appsignal.JSPlug
+    ```
 
     Now send the errors with a POST request to the `/appsignal_error_catcher`
     endpoint.
@@ -54,54 +58,81 @@ if appsignal.plug? do
     end
 
     def call(%Plug.Conn{request_path: "/appsignal_error_catcher", method: "POST"} = conn, _) do
-      record_transaction(conn)
+      start_transaction()
+      |> set_action(conn)
+      |> set_error(conn)
+      |> complete_transaction(conn)
+
       send_resp(conn, 200, "")
     end
     def call(conn, _), do: conn
 
-    defp record_transaction(conn) do
+    defp start_transaction do
+      Appsignal.Transaction.start(@transaction.generate_id, :frontend)
+    end
+
+    # Set a custom action for the JavaScript error
+    defp set_action(transaction, conn) do
+      case Map.fetch(conn.params, "action") do
+        {:ok, action} -> @transaction.set_action(transaction, action)
+        :error -> transaction
+      end
+    end
+
+    defp set_error(transaction, conn) do
       # Required data for the error
       %{
         "name" => name,
         "message" => message,
         "backtrace" => backtrace,
-        "environment" => environment,
-      } = data = conn.params
+      } = conn.params
+      @transaction.set_error(transaction, name, message, backtrace)
+    end
 
-      transaction =
-        Appsignal.Transaction.start(@transaction.generate_id, :frontend)
-        |> @transaction.set_error(name, message, backtrace)
+    defp set_environment(transaction, conn) do
+      # Set environment, required field
+      %{"environment" => environment} = conn.params
+      @transaction.set_sample_data(transaction, "environment", environment)
+    end
 
-      # Set a custom action for the JavaScript error
-      transaction =
-        case Map.fetch(data, "action") do
-          {:ok, action} ->
-            @transaction.set_action(transaction, action)
-          :error -> transaction
-        end
-
-      case @transaction.finish(transaction) do
-        :sample ->
-          transaction
-          |> @transaction.set_sample_data("environment", environment)
-
-          # Only set params when available
-          if Map.has_key?(data, "params") do
-            {:ok, p} = Map.fetch(data, "params")
-            @transaction.set_sample_data(transaction, "params", p)
-          end
-
-          # Only fetch session data when necessary
-          if !config()[:skip_session_data] do
-            c = fetch_session(conn)
-            # Only add it when the session has actually been fetched
-            if c.private[:plug_session_fetch] == :done do
-              @transaction.set_sample_data(
-                transaction, "session_data", c.private[:plug_session]
-              )
-            end
-          end
+    defp set_params(transaction, conn) do
+      # Only set params when available
+      case Map.fetch(conn.params, "params") do
+        {:ok, params} ->
+          @transaction.set_sample_data(transaction, "params", params)
+        :error -> transaction
       end
+    end
+
+    defp set_session_data(transaction, conn) do
+      # Only fetch session data when necessary
+      case config()[:skip_session_data] do
+        false ->
+          c = fetch_session(conn)
+          case c.private[:plug_session_fetch] do
+            # Only add it when the session has actually been fetched
+            :done ->
+              @transaction.set_sample_data(
+                transaction,
+                "session_data",
+                c.private[:plug_session]
+              )
+            _ -> transaction
+          end
+        true -> transaction
+      end
+    end
+
+    defp complete_transaction(transaction, conn) do
+      transaction =
+        case @transaction.finish(transaction) do
+          :sample ->
+            transaction
+            |> set_environment(conn)
+            |> set_params(conn)
+            |> set_session_data(conn)
+          _ -> transaction
+        end
       :ok = @transaction.complete(transaction)
     end
   end
