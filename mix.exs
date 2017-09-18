@@ -22,7 +22,7 @@ defmodule Appsignal.JSPlug.Mixfile do
   end
 
   defp package do
-    %{files: ["lib", "mix.exs", "*.md", "LICENSE", "Makefile"],
+    %{files: ["lib", "mix.exs", "*.md", "LICENSE"],
       maintainers: ["Tom de Bruijn"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/tombruijn/appsignal-elixir_js_plug"}}
