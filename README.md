@@ -12,18 +12,14 @@ AppSignal. Use at your own risk.
 
 ## Usage
 
-Add the following parser to your router.
+Add the following parser to your endpoint.ex file.
 
 ```elixir
 plug Plug.Parsers,
   parsers: [:urlencoded, :multipart, :json],
   pass: ["*/*"],
   json_decoder: Poison
-```
 
-Add the `Appsignal.JSPlug` plug to your endpoint.ex file.
-
-```elixir
 use Appsignal.Phoenix # Below the AppSignal (Phoenix) plug
 plug Appsignal.JSPlug
 ```
