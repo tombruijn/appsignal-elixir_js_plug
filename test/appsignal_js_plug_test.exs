@@ -42,7 +42,7 @@ defmodule Appsignal.JSPlugTest do
   end
 
   test "normal request with minimal data" do
-    conn(
+    conn = conn(
       :post,
       "/appsignal_error_catcher",
       """
@@ -63,6 +63,7 @@ defmodule Appsignal.JSPlugTest do
     |> prepare_conn
     |> send_request
 
+    assert conn.halted
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -82,7 +83,7 @@ defmodule Appsignal.JSPlugTest do
   end
 
   test "request with params" do
-    conn(
+    conn = conn(
       :post,
       "/appsignal_error_catcher",
       """
@@ -107,6 +108,7 @@ defmodule Appsignal.JSPlugTest do
     |> prepare_conn
     |> send_request
 
+    assert conn.halted
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -122,7 +124,7 @@ defmodule Appsignal.JSPlugTest do
   end
 
   test "request with action" do
-    conn(
+    conn = conn(
       :post,
       "/appsignal_error_catcher",
       """
@@ -143,6 +145,7 @@ defmodule Appsignal.JSPlugTest do
     |> prepare_conn
     |> send_request
 
+    assert conn.halted
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -154,7 +157,7 @@ defmodule Appsignal.JSPlugTest do
   end
 
   test "request with session data" do
-    conn(
+    conn = conn(
       :post,
       "/appsignal_error_catcher",
       """
@@ -178,6 +181,7 @@ defmodule Appsignal.JSPlugTest do
     |> put_session("data", 10)
     |> send_request
 
+    assert conn.halted
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -201,7 +205,7 @@ defmodule Appsignal.JSPlugTest do
     end
 
     test "does not set session data on transaction" do
-      conn(
+      conn = conn(
         :post,
         "/appsignal_error_catcher",
         """
@@ -222,6 +226,7 @@ defmodule Appsignal.JSPlugTest do
       |> prepare_conn
       |> send_request
 
+      assert conn.halted
       assert FakeTransaction.sample_data == %{
         "environment" => %{
           "agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)",
