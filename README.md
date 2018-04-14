@@ -20,8 +20,8 @@ plug Plug.Parsers,
   pass: ["*/*"],
   json_decoder: Poison
 
-use Appsignal.Phoenix # Below the AppSignal (Phoenix) plug
-plug Appsignal.JSPlug
+plug Appsignal.JSPlug # Above your app's router plug
+plug MyExampleApp.Router
 ```
 
 Now send the errors with a POST request to the `/appsignal_error_catcher`
