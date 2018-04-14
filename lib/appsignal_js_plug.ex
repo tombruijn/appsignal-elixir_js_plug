@@ -63,7 +63,9 @@ if appsignal.plug? do
       |> set_error(conn)
       |> complete_transaction(conn)
 
-      send_resp(conn, 200, "")
+      conn
+      |> send_resp(200, "")
+      |> halt
     end
     def call(conn, _), do: conn
 
