@@ -125,6 +125,61 @@ defmodule Appsignal.JSPlugTest do
     }
   end
 
+  describe "with filtered params" do
+    setup do
+      original_config = Application.get_env(:appsignal, :config, %{})
+      config = Map.put(original_config, :filter_parameters, ["foo"])
+      Application.put_env(:appsignal, :config, config)
+
+      on_exit(fn ->
+        Application.put_env(:appsignal, :config, original_config)
+      end)
+      :ok
+    end
+
+    test "filters params" do
+      conn = conn(
+        :post,
+        "/appsignal_error_catcher",
+        """
+        {
+          "name": "MyError",
+          "message": "My error message",
+          "backtrace": [
+            "foo/bar.js:1",
+            "foo/baz.js:10"
+          ],
+          "environment": {
+            "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)",
+            "platform": "MacIntel"
+          },
+          "params": {
+            "foo": "bar",
+            "baz": 10
+          }
+        }
+        """
+      )
+      |> prepare_conn
+      |> send_request
+
+      assert conn.halted
+      assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
+      assert FakeTransaction.action == nil
+      assert FakeTransaction.sample_data == %{
+        "environment" => %{
+          "agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)",
+          "platform" => "MacIntel"
+        },
+        "params" => %{
+          "foo" => "[FILTERED]",
+          "baz" => 10
+        },
+        "session_data" => %{}
+      }
+    end
+  end
+
   test "request with action" do
     conn = conn(
       :post,
