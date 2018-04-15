@@ -52,6 +52,19 @@ Then run `mix deps.get`.
 
 ## Configuration
 
+### `filter_parameters`
+
+This package listens to the AppSignal for Elixir [`filter_parameters`
+configuration option]. If this option is set, all parameters values matching a
+key name from the configuration will be replaced with `[FILTERED]`.
+
+```elixir
+# config/appsignal.exs
+config :appsignal, :config, filter_parameters: ["password"]
+```
+
+### `skip_session_data`
+
 This package listens to the AppSignal for Elixir [`skip_session_data`
 configuration option]. If this option is set to `true`, no session data will be
 added to the JavaScript errors.
@@ -84,3 +97,4 @@ the MIT License. Check the [LICENSE](LICENSE) file for more information.
 [installation guide]: https://docs.appsignal.com/elixir/installation.html
 [Front-end error handling]: https://docs.appsignal.com/front-end/error-handling.html
 [`skip_session_data` configuration option]: https://docs.appsignal.com/elixir/configuration/options.html#appsignal_skip_session_data-skip_session_data
+[`filter_parameters` configuration option]: https://docs.appsignal.com/elixir/configuration/parameter-filtering.html

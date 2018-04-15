@@ -102,7 +102,11 @@ if appsignal.plug? do
       # Only set params when available
       case Map.fetch(conn.params, "params") do
         {:ok, params} ->
-          @transaction.set_sample_data(transaction, "params", params)
+          @transaction.set_sample_data(
+            transaction,
+            "params",
+            Appsignal.Utils.ParamsFilter.filter_values(params)
+          )
         :error -> transaction
       end
     end
