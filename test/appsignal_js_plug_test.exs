@@ -64,6 +64,7 @@ defmodule Appsignal.JSPlugTest do
     |> send_request
 
     assert conn.halted
+    assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -109,6 +110,7 @@ defmodule Appsignal.JSPlugTest do
     |> send_request
 
     assert conn.halted
+    assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -146,6 +148,7 @@ defmodule Appsignal.JSPlugTest do
     |> send_request
 
     assert conn.halted
+    assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -182,6 +185,7 @@ defmodule Appsignal.JSPlugTest do
     |> send_request
 
     assert conn.halted
+    assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
     assert FakeTransaction.action == nil
     assert FakeTransaction.sample_data == %{
       "environment" => %{
@@ -227,6 +231,7 @@ defmodule Appsignal.JSPlugTest do
       |> send_request
 
       assert conn.halted
+      assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
       assert FakeTransaction.sample_data == %{
         "environment" => %{
           "agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)",

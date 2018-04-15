@@ -64,6 +64,7 @@ if appsignal.plug? do
       |> complete_transaction(conn)
 
       conn
+      |> put_resp_header("content-type", "text/html; charset=utf-8")
       |> send_resp(200, "")
       |> halt
     end
