@@ -88,6 +88,15 @@ mix test
 mix test test/appsignal/some_test.ex:123
 ```
 
+### Publishing new versions
+
+1. Merge the `develop` branch to `master` if necessary.
+2. Update the version number in `mix.exs`, e.g. `1.2.3`
+3. Commit the change.
+4. Tag the commit with the version number: `git tag 1.2.3`
+5. Push the changes: `git push origin master 1.2.3`
+6. Publish the package: `mix hex.publish`
+
 ## License
 
 The AppSignal for Elixir JavaScript Plug package source code is released under
