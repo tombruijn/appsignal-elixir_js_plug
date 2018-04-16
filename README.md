@@ -43,7 +43,7 @@ list of dependencies in `mix.exs`.
 def deps do
   [
     {:appsignal, ">= 1.3.0"},
-    {:appsignal_js_plug, "~> 0.1.0"}
+    {:appsignal_js_plug, "~> 0.2"}
   ]
 end
 ```
