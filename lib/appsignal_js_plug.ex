@@ -105,7 +105,7 @@ if appsignal.plug? do
           @transaction.set_sample_data(
             transaction,
             "params",
-            Appsignal.Utils.ParamsFilter.filter_values(params)
+            filter_params(params)
           )
         :error -> transaction
       end
@@ -141,6 +141,16 @@ if appsignal.plug? do
           _ -> transaction
         end
       :ok = @transaction.complete(transaction)
+    end
+
+    if Code.ensure_compiled?(Appsignal.Utils.MapFilter) do
+      defp filter_params(params) do
+        Appsignal.Utils.MapFilter.filter_values(params, Appsignal.Utils.MapFilter.get_filter_parameters())
+      end
+    else
+      defp filter_params(params) do
+        Appsignal.Utils.ParamsFilter.filter_values(params)
+      end
     end
   end
 end
