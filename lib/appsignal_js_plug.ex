@@ -140,7 +140,7 @@ if appsignal.plug? do
             |> set_session_data(conn)
           _ -> transaction
         end
-      :ok = @transaction.complete(transaction)
+      @transaction.complete(transaction)
     end
 
     if Code.ensure_compiled?(Appsignal.Utils.MapFilter) do
