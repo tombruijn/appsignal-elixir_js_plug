@@ -3,7 +3,7 @@ defmodule Appsignal.JSPlug.Mixfile do
 
   def project do
     [app: :appsignal_js_plug,
-     version: "0.2.1",
+     version: "0.2.2",
      name: "AppSignal JavaScript plug",
      description: description(),
      package: package(),
