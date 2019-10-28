@@ -1,6 +1,6 @@
 # AppSignal for Elixir JavaScript Plug
 
-> ⚠️ This Plug is deprecated. Please use [AppSignal's JavaScript integration](https://appsignal.com/javascript/) instead.
+> ⚠️ This Plug is deprecated. Please use the official [AppSignal JavaScript front-end integration](https://appsignal.com/javascript/) instead.
 
 A plug for sending JavaScript errors to AppSignal. Works for Phoenix and
 Plug-only apps.
@@ -10,7 +10,7 @@ AppSignal. Use at your own risk.
 
 - [AppSignal.com website](https://appsignal.com/)
 - [AppSignal for Elixir documentation](http://docs.appsignal.com/elixir/)
-- AppSignal for [Front-end error handling] (Beta) documentation
+- ~AppSignal for [Front-end error handling] (Beta) documentation~ Replaced with new JavaScript front-end integration.
 
 ## Usage
 

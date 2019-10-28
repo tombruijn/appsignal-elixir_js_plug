@@ -55,6 +55,8 @@ if appsignal.plug? do
 
     def init(_) do
       Logger.debug("Initializing Appsignal.JSPlug")
+      Logger.warn "The Appsignal.JSPlug is deprecated. Please use the " <>
+        "official AppSignal JavaScript integration instead."
     end
 
     def call(%Plug.Conn{request_path: "/appsignal_error_catcher", method: "POST"} = conn, _) do

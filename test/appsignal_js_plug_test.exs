@@ -1,6 +1,10 @@
 defmodule Appsignal.JSPlugTest do
   use ExUnit.Case
   use Plug.Test
+
+  import ExUnit.CaptureLog
+  require Logger
+
   doctest Appsignal.JSPlug
 
   alias Appsignal.FakeTransaction
@@ -39,6 +43,12 @@ defmodule Appsignal.JSPlugTest do
 
   def send_request(conn) do
     Appsignal.JSPlug.call(conn, [])
+  end
+
+  test "init logs about deprecation" do
+    assert capture_log(fn ->
+      Appsignal.JSPlug.init(1)
+    end) =~ "The Appsignal.JSPlug is deprecated."
   end
 
   test "normal request with minimal data" do
